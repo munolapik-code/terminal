@@ -3,42 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Sber Terminal</title>
     <style>
-    body, html {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background-color: #000;
-    }
-    #video-background {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        min-width: 100%;
-        min-height: 100%;
-        width: auto;
-        height: auto;
-        transform: translate(-50%, -50%); /* Центрирует видео */
-        object-fit: cover; /* Заполняет экран. Если обрезает - смени на 'contain' */
-    }
-</style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; color: white; }
+        #video-bg { position: fixed; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+        .screen { position: fixed; top:0; left:0; width:100%; height:100%; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; background: rgba(0,0,0,0.8); }
+        .glass { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border-radius: 30px; padding: 30px; text-align: center; width: 80%; border: 1px solid rgba(255,255,255,0.1); }
+        input { padding: 15px; border-radius: 15px; border: none; margin: 10px 0; width: 90%; font-size: 18px; color: #000; }
+        button { padding: 15px 30px; border-radius: 20px; border: none; background: #009640; color: white; font-size: 18px; margin: 10px 0; width: 100%; cursor: pointer; }
+    </style>
 </head>
 <body>
 
-    <video id="video-background" autoplay loop muted playsinline>
-        <source src="animation.MP4" type="video/mp4">
+    <video id="video-bg" autoplay loop muted playsinline onclick="checkClicks()">
+        <source src="video.mp4" type="video/mp4">
     </video>
 
+    <div id="passScreen" class="screen">
+        <div class="glass">
+            <h3>Вход в систему</h3>
+            <input type="password" id="passInput" placeholder="Пароль">
+            <button onclick="checkPass()">Войти</button>
+        </div>
+    </div>
+
+    <div id="menuScreen" class="screen">
+        <div class="glass">
+            <h3>Операции</h3>
+            <button onclick="showSumScreen()">Оплата услуг</button>
+            <button onclick="location.reload()" style="background: #444;">Выход</button>
+        </div>
+    </div>
+
+    <div id="sumScreen" class="screen">
+        <div class="glass">
+            <h3>Сумма оплаты</h3>
+            <input type="number" id="sumInput" placeholder="0.00 руб.">
+            <button onclick="goToPayment()">Далее</button>
+        </div>
+    </div>
+
+    <div id="payScreen" class="screen" style="background: #000;">
+        <div style="position: absolute; top: 40px; left: 20px; color: #009640; font-weight: bold;">Оплата</div>
+        <div id="sumDisplay" style="font-size: 32px; margin-bottom: 30px;">0 руб.</div>
+        <button onclick="processPayment()" style="width: 80%; border-radius: 50px;">Оплатить улыбкой</button>
+    </div>
+
+    <div id="successScreen" class="screen">
+        <div class="glass">
+            <div id="statusText">Операция обрабатывается...</div>
+        </div>
+    </div>
+
     <script>
-        // Дополнительная защита: перезапуск видео, если оно остановилось
-        const video = document.getElementById('video-background');
-        video.addEventListener('ended', () => {
-            video.play();
-        });
+        let clicks = 0;
+        function checkClicks() {
+            clicks++;
+            if(clicks >= 5) { document.getElementById('passScreen').style.display = 'flex'; clicks = 0; }
+        }
+        function checkPass() {
+            if(document.getElementById('passInput').value === '1234') {
+                document.getElementById('passScreen').style.display = 'none';
+                document.getElementById('menuScreen').style.display = 'flex';
+            }
+        }
+        function showSumScreen() {
+            document.getElementById('menuScreen').style.display = 'none';
+            document.getElementById('sumScreen').style.display = 'flex';
+        }
+        function goToPayment() {
+            document.getElementById('sumDisplay').innerText = document.getElementById('sumInput').value + ' руб.';
+            document.getElementById('sumScreen').style.display = 'none';
+            document.getElementById('payScreen').style.display = 'flex';
+        }
+        function processPayment() {
+            document.getElementById('payScreen').style.display = 'none';
+            document.getElementById('successScreen').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('statusText').innerText = "Операция успешна!";
+                setTimeout(() => location.reload(), 2000);
+            }, 2000);
+        }
     </script>
 </body>
 </html>
