@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Sber Terminal</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Убирает скролл */
+            background-color: #000;
+        }
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: cover; /* Видео растягивается на весь экран без искажений */
+        }
+    </style>
+</head>
+<body>
+
+    <video id="video-background" autoplay loop muted playsinline>
+        <source src="animation.mp4" type="video/mp4">
+    </video>
+
+    <script>
+        // Дополнительная защита: перезапуск видео, если оно остановилось
+        const video = document.getElementById('video-background');
+        video.addEventListener('ended', () => {
+            video.play();
+        });
+    </script>
+</body>
+</html>
